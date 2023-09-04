@@ -1,0 +1,44 @@
+Pcom Tema 4
+
+Am folosit biblioteca de parsare Json recomandata in enuntul temei, pentru usurinta crearii si parsarii mesajelor Json.
+
+Conexiunea cu serverul o pastrez apeland open_connection la inceputul while-ului si close_connection la finalul while-ului, deci creez o noua conexiune la fiecare comanda citita de la stdin.
+
+In cazul in care statusul unui raspuns http de la server nu e 200 sau 201 (adica cererea de la client a esuat), mesajul de eroare afisat la stdout va fi cel din raspunsul http de la server, care e de forma 
+{"error": "mesaj de eroare"}.
+
+Comenzi citite de la stdin de client:
+    - REGISTER : avem functia registerClient care primeste socketul pe care se face conexiunea cu serverul
+
+    - LOGIN : avem functia loginClient care primeste socketul pe care se face conexiunea cu serverul;
+    de data asta, prin autentificarea la biblioteca trimitand un post request la server, vom primi un
+    raspuns cu cookies, pe care il vom salva pentru clientul curent. De cookies vom avea nevoie cand vom
+    cere acces la biblioteca.
+
+    Doar daca avem cookies salvate, inseamna ca suntem autentificati, deci vom putea face enter_library, 
+    altfel nu are sens sa trimitem cerere de acces la biblioteca si doar afisam un mesaj de eroare.
+
+    - ENTER_LIBRARY : avem functia enterLibrary care primeste socketul pe care se face conexiunea cu serverul 
+    si cookies, pentru a demonstra ca clientul curent este autentificat la biblioteca. Vom trimite un get request 
+    la server, iar raspunsul va contine un token JWT, pe care il vom salva pentru clientul curent. De token vom avea nevoie pentru acces ulterior la biblioteca.
+
+    Atata timp cat avem cookies si token salvate, inseamna ca suntem autentificati si avem acces la biblioteca, 
+    deci vor avea sens comenzile de GET_BOOKS, GET_BOOK, ADD_BOOK, DELETE_BOOK, altfel nu are sens sa trimitem 
+    cereri catre biblioteca si doar afisam un mesaj de eroare.
+
+    Pentru a introduce headerul de authorization care contine tokenul in requesturi, am adaugat un parametru in plus
+    la functiile care trimit requesturi la server, si anume tokenul.
+
+    - GET_BOOKS : avem functia booksLibrary care primeste socketul pe care se face conexiunea cu serverul si tokenul.
+
+    - GET_BOOK : avem functia bookInfo care primeste socketul pe care se face conexiunea cu serverul si tokenul.
+
+    - ADD_BOOK : avem functia addBookToLibrary care primeste socketul pe care se face conexiunea cu serverul si tokenul.
+
+    - DELETE_BOOK : avem functia deleteBookFromLibrary care primeste socketul pe care se face conexiunea cu serverul si tokenul.
+
+    - LOGOUT : avem functia logoutClient care primeste socketul pe care se face conexiunea cu serverul si cookies;
+    daca nu am dat login inainte de logout vom afisa direct un mesaj de eroare; dam free la cookies, iar daca
+    aveam token salvat, ii dam free si lui.
+
+    - EXIT : cand dam exit, dam free la cookies si token si inchidem conexiunea cu serverul.
